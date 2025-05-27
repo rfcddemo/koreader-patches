@@ -16,9 +16,25 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $this->call([
+            // Seeders existants
             RolePermissionSeeder::class,
             UserSeeder::class,
+            OrganisationPermissionsSeeder::class,
+
+            // Nouveaux seeders pour le module investisseurs
+            CategorieInvestisseurSeeder::class,
+            OrganisationSeeder::class,
+            ContactSeeder::class,
             InvestorSeeder::class,
         ]);
+
+        $this->command->info('🎉 Base de données peuplée avec succès !');
+        $this->command->info('📊 Données créées :');
+        $this->command->info('   - Catégories d\'investisseurs : ' . \App\Models\CategorieInvestisseur::count());
+        $this->command->info('   - Organisations : ' . \App\Models\Organisation::count());
+        $this->command->info('   - Contacts : ' . \App\Models\Contact::count());
+        $this->command->info('   - Investisseurs : ' . \App\Models\Investor::count());
+        $this->command->info('   - Interactions : ' . \App\Models\Interaction::count());
+        $this->command->info('   - Commentaires : ' . \App\Models\InvestisseurCommentaire::count());
     }
 }

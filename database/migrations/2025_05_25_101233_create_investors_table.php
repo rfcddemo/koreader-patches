@@ -13,22 +13,24 @@ return new class extends Migration
     {
         Schema::create('investors', function (Blueprint $table) {
             $table->id();
-            $table->string('nom_complet');
-            $table->enum('categorie', ['Institutionnel', 'Analyste', 'Particulier', 'Fonds', 'Banque'])->default('Institutionnel');
-            $table->string('pays');
-            $table->string('email')->unique();
+            $table->enum('civilite', ['M', 'Mme', 'Dr', 'Prof'])->nullable();
+            $table->string('prenom')->nullable();
+            $table->string('nom')->nullable();
+            $table->string('pays')->nullable();
+            $table->string('email')->nullable();
             $table->string('telephone')->nullable();
-            $table->string('organisation');
             $table->string('fonction')->nullable();
             $table->enum('langue_preferee', ['Français', 'Anglais', 'Arabe'])->default('Français');
             $table->text('remarques')->nullable();
             $table->timestamp('derniere_interaction')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
-            // Index pour améliorer les performances de recherche
-            $table->index(['nom_complet', 'email', 'organisation']);
-            $table->index('categorie');
-            $table->index('pays');
+            $table->string('mobile')->nullable();
+            $table->enum('niveau_influence', ['Faible', 'Moyen', 'Élevé', 'Critique'])->default('Moyen');
+            $table->json('tags')->nullable();
+            $table->unsignedBigInteger('categorie_id')->nullable();
+            $table->foreign('categorie_id')->references('id')->on('categories_investisseurs');
         });
     }
 
