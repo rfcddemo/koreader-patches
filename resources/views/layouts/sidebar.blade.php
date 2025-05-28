@@ -69,7 +69,7 @@
                      x-transition:enter-start="opacity-0 -translate-y-2"
                      x-transition:enter-end="opacity-100 translate-y-0"
                      class="ml-8 mt-2 space-y-1">
-                    <a href="#"
+                    <a href="{{ route('investors.index') }}"
                        class="flex items-center px-3 py-2 rounded-lg text-sm transition-colors duration-200 {{ request()->routeIs('investors.index') ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-700 hover:text-white' }}">
                         Liste des investisseurs
                     </a>

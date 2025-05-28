@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\CategorieInvestisseurController;
+use App\Http\Controllers\InvestorController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,9 +38,61 @@ Route::middleware('auth')->group(function () {
         ->middleware('can:update,organisation');
 
     // Routes pour les catégories d'investisseurs
-    Route::resource('categories-investisseurs', CategorieInvestisseurController::class);
+// Routes pour les catégories d'investisseurs
+    Route::resource('categories-investisseurs', CategorieInvestisseurController::class)
+        ->middleware([
+            'can:viewAny,App\Models\CategorieInvestisseur',
+            'can:create,App\Models\CategorieInvestisseur',
+            'can:update,App\Models\CategorieInvestisseur',
+            'can:delete,App\Models\CategorieInvestisseur'
+        ]);
+
     Route::post('/categories-investisseurs/reorder', [CategorieInvestisseurController::class, 'reorder'])
-        ->name('categories-investisseurs.reorder');
+        ->name('categories-investisseurs.reorder')
+        ->middleware('can:reorder,App\Models\CategorieInvestisseur');
+
+    Route::get('/investisseurs', [InvestorController::class, 'index'])
+        ->name('investors.index')
+        ->middleware('can:viewAny,App\Models\Investor');
+        ;
+
+    Route::get('/investisseurs/create', [InvestorController::class, 'create'])
+        ->name('investors.create')
+        ->middleware('can:create,App\Models\Investor');
+    Route::post('/investisseurs', [InvestorController::class, 'store'])
+        ->name('investors.store')
+        ->middleware('can:create,App\Models\Investor');
+
+    Route::get('/investisseurs/{investor}', [InvestorController::class, 'show'])
+        ->name('investors.show')
+        ->middleware('can:view,investor');
+    Route::get('/investisseurs/{investor}/edit', [InvestorController::class, 'edit'])
+        ->name('investors.edit')
+        ->middleware('can:update,investor');
+
+    Route::patch('/investisseurs/{investor}', [InvestorController::class, 'update'])
+        ->name('investors.update')
+        ->middleware('can:update,investor');
+
+    Route::delete('/investisseurs/{investor}', [InvestorController::class, 'destroy'])
+        ->name('investors.destroy')
+        ->middleware('can:delete,investor');
+
+    Route::get('/investisseurs/{investor}/timeline', [InvestorController::class, 'timeline'])
+        ->name('investors.timeline')
+        ->middleware('can:view,investor');
+
+    Route::get('/investisseurs/{investor}/export', [InvestorController::class, 'export'])
+        ->name('investors.export')
+        ->middleware('can:view,investor');
+
+    Route::get('/investisseurs/{investor}/export-pdf', [InvestorController::class, 'exportPdf'])
+        ->name('investors.export-pdf')
+        ->middleware('can:view,investor');
+
+
+
+
 });
 
 require __DIR__.'/auth.php';

@@ -60,6 +60,7 @@ class InvestorController extends Controller
         // Données pour les filtres
         $categories = CategorieInvestisseur::actifs()->ordered()->get();
         $pays = Investor::distinct()->pluck('pays')->filter()->sort()->values();
+        $organisations = Organisation::actifs()->orderBy('raison_sociale')->get();
         $langues = ['Français', 'Anglais', 'Arabe'];
         $niveauxInfluence = ['Faible', 'Moyen', 'Élevé', 'Critique'];
 
@@ -72,7 +73,7 @@ class InvestorController extends Controller
 
         return view('investors.index', compact(
             'investors', 'view', 'perPage', 'categories', 'pays',
-            'langues', 'niveauxInfluence', 'stats'
+            'langues', 'niveauxInfluence', 'stats', 'organisations'
         ));
     }
 
@@ -190,7 +191,7 @@ class InvestorController extends Controller
             DB::commit();
 
             return redirect()
-                ->route('investors.show', $investor)
+                ->route('investors.index')
                 ->with('success', 'L\'investisseur a été mis à jour avec succès.');
 
         } catch (\Exception $e) {

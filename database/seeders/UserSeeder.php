@@ -15,18 +15,22 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Créer l'utilisateur administrateur
-        $admin = User::create([
-            'name' => 'Admin',
-            'nom_complet' => 'Administrateur Système',
-            'email' => 'admin@bankofafrica.com',
-            'telephone' => '+212 5 37 57 20 20',
-            'password' => Hash::make('password123'),
-            'email_verified_at' => now(),
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@bankofafrica.com'],
+            [
+                'name' => 'Admin',
+                'nom_complet' => 'Administrateur Système',
+                'telephone' => '+212 5 37 57 20 20',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+            ]
+        );
         $admin->assignRole('Administrateur');
 
         // Créer un utilisateur éditeur
-        $editeur = User::create([
+        $editeur = User::firstOrCreate(
+            ['email' => 'houda@bankofafrica.com'],
+            [
             'name' => 'Houda',
             'nom_complet' => 'Houda Benali',
             'email' => 'houda@bankofafrica.com',
@@ -37,7 +41,9 @@ class UserSeeder extends Seeder
         $editeur->assignRole('Éditeur');
 
         // Créer un utilisateur lecture seule
-        $lecteur = User::create([
+        $lecteur = User::firstOrCreate(
+            ['email' => 'ahmed@bankofafrica.com'],
+            [
             'name' => 'Ahmed',
             'nom_complet' => 'Ahmed Alami',
             'email' => 'ahmed@bankofafrica.com',

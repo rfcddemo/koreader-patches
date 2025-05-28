@@ -15,11 +15,7 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            // Permissions Investisseurs
-            'view_investors',
-            'create_investors',
-            'edit_investors',
-            'delete_investors',
+
 
             // Permissions Interactions
             'view_interactions',
@@ -41,27 +37,26 @@ class RolePermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            // Créer les permissions si elles n'existent pas déjà
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Créer les rôles et assigner les permissions
 
         // ADMINISTRATEUR - Tous les droits
-        $adminRole = Role::create(['name' => 'Administrateur']);
+        $adminRole = Role::firstOrCreate(['name' => 'Administrateur']);
         $adminRole->givePermissionTo(Permission::all());
 
         // ÉDITEUR - Peut tout faire sauf admin
-        $editeurRole = Role::create(['name' => 'Éditeur']);
+        $editeurRole = Role::firstOrCreate(['name' => 'Éditeur']);
         $editeurRole->givePermissionTo([
-            'view_investors', 'create_investors', 'edit_investors',
             'view_interactions', 'create_interactions', 'edit_interactions',
             'send_emails', 'view_email_logs'
         ]);
 
         // LECTURE SEULE - Consultation uniquement
-        $lectureRole = Role::create(['name' => 'Lecture seule']);
+        $lectureRole = Role::firstOrCreate(['name' => 'Lecture seule']);
         $lectureRole->givePermissionTo([
-            'view_investors',
             'view_interactions'
         ]);
     }

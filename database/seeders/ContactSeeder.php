@@ -82,7 +82,16 @@ class ContactSeeder extends Seeder
         ];
 
         foreach ($contacts as $contactData) {
-            Contact::create($contactData);
+            Contact::firstOrCreate(
+                ['email' => $contactData['email']],
+                [
+                    'prenom' => $contactData['prenom'],
+                    'nom' => $contactData['nom'],
+                    'telephone' => $contactData['telephone'],
+                    'mobile' => $contactData['mobile'],
+                    'notes' => $contactData['notes']
+                ]
+            );
         }
 
         // Associer les contacts aux organisations
@@ -107,6 +116,10 @@ class ContactSeeder extends Seeder
             $organisation = Organisation::where('raison_sociale', $assoc['organisation_nom'])->first();
 
             if ($contact && $organisation) {
+                // Vérifier si la relation existe déjà
+                if ($contact->organisations()->where('organisation_id', $organisation->id)->exists()) {
+                    continue; // Relation déjà existante, passer à la suivante
+                }
                 $contact->organisations()->attach($organisation->id, [
                     'poste' => $assoc['poste'],
                     'date_debut' => now()->subYears(rand(1, 5)),

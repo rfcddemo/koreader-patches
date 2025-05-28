@@ -33,7 +33,6 @@ class UpdateInvestorRequest extends FormRequest
             'email' => ['required', 'email', 'max:255', Rule::unique('investors')->ignore($investor)],
             'telephone' => ['nullable', 'string', 'max:50'],
             'mobile' => ['nullable', 'string', 'max:50'],
-            'organisation' => ['nullable', 'string', 'max:255'], // Ancien format pour compatibilité
             'fonction' => ['nullable', 'string', 'max:255'],
             'langue_preferee' => ['required', Rule::in(['Français', 'Anglais', 'Arabe'])],
             'niveau_influence' => ['required', Rule::in(['Faible', 'Moyen', 'Élevé', 'Critique'])],
