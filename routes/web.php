@@ -120,4 +120,14 @@ Route::middleware('auth')->group(function () {
 
 });
 
+Route::get('/investors/interactions/{interaction}/download', [InvestorController::class, 'downloadAttachment'])
+    ->name('investors.download-attachment')
+    ->middleware('auth');
+
+// Route pour envoyer un email à un investisseur
+Route::post('/investors/{investor}/send-email', [InvestorController::class, 'sendEmail'])
+    ->name('investors.send-email')
+    ->middleware(['auth', 'can:view,investor']);
+
+
 require __DIR__.'/auth.php';

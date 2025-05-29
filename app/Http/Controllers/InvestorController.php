@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreInvestorRequest;
 use App\Http\Requests\UpdateInvestorRequest;
 use App\Models\CategorieInvestisseur;
+use App\Models\Interaction;
 use App\Models\Investor;
 use App\Models\InvestorEmailAddress;
 use App\Models\Organisation;
@@ -301,7 +302,7 @@ class InvestorController extends Controller
     {
         $investor->load([
             'categorie',
-            'organisations.pivot',
+            'organisations', // Retirez '.pivot', les données pivot seront déjà accessibles
             'interactions' => function ($query) {
                 $query->with('user')->orderBy('date_interaction', 'desc');
             },
@@ -316,6 +317,19 @@ class InvestorController extends Controller
         $filename = 'investisseur_' . \Str::slug($investor->nom_complet) . '_' . now()->format('Y-m-d') . '.pdf';
 
         return $pdf->download($filename);
+    }
+
+    /**
+     * Download interaction attachment.
+     */
+    public function downloadAttachment(Interaction $interaction)
+    {
+        if (!$interaction->piece_jointe || !Storage::disk('private')->exists($interaction->piece_jointe)) {
+            abort(404, 'Fichier introuvable');
+        }
+
+        $filename = basename($interaction->piece_jointe);
+        return Storage::disk('private')->download($interaction->piece_jointe, $filename);
     }
 
     /**
@@ -359,19 +373,5 @@ class InvestorController extends Controller
                 'message' => 'Erreur lors de l\'envoi de l\'email : ' . $e->getMessage()
             ], 500);
         }
-    }
-
-    /**
-     * Download interaction attachment.
-     */
-    public function downloadAttachment(Interaction $interaction)
-    {
-        if (!$interaction->piece_jointe || !Storage::disk('private')->exists($interaction->piece_jointe)) {
-            abort(404, 'Fichier introuvable');
-        }
-
-        $filename = basename($interaction->piece_jointe);
-
-        return Storage::disk('private')->download($interaction->piece_jointe, $filename);
     }
 }
