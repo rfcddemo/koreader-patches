@@ -21,7 +21,6 @@ class Investor extends Model
         'email',
         'telephone',
         'mobile',
-        'organisation',
         'fonction',
         'langue_preferee',
         'niveau_influence',

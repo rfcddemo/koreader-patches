@@ -227,8 +227,8 @@
                                         </div>
 
                                         <!-- Actuel -->
-                                        <div class="form-control md:col-span-1 flex items-end mb-2">
-                                            <label class="label cursor-pointer justify-start space-x-2">
+                                        <div class="form-control md:col-span-1 flex items-center md:items-end mb-2 md:mb-0">
+                                            <label class="label cursor-pointer justify-start space-x-2 w-full">
                                                 <input type="checkbox" name="organisations[{{ $key }}][actuel]" value="1"
                                                        class="checkbox"
                                                     @checked(old("organisations.{$key}.actuel", $org->pivot->actuel))>
@@ -251,18 +251,6 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                             <!-- Organisation (champ texte) -->
-                            <div class="form-control">
-                                <label for="organisation" class="label">Organisation</label>
-                                <input type="text" name="organisation" id="organisation"
-                                       class="input input-bordered w-full @error('organisation') input-error @enderror"
-                                       value="{{ old('organisation', $investor->organisation) }}">
-                                <p class="text-xs text-slate-500 mt-1">
-                                    Utiliser de préférence la section "Organisations" ci-dessus.
-                                </p>
-                                @error('organisation')
-                                <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
-                                @enderror
-                            </div>
 
                             <!-- Fonction -->
                             <div class="form-control">

@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
             OrganisationPermissionsSeeder::class,
             InvestorPermissionsSeeder::class,
             CategorieInvestisseurPermissionsSeeder::class,
+            ContactPermissionSeeder::class,
+
 
             // Nouveaux seeders pour le module investisseurs
             CategorieInvestisseurSeeder::class,

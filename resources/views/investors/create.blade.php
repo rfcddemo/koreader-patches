@@ -239,19 +239,7 @@
                     <div>
                         <h2 class="text-lg font-semibold text-slate-800 mb-4">Informations professionnelles (ancien format)</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Organisation -->
-                            <div class="form-control">
-                                <label for="organisation" class="label">Organisation</label>
-                                <input type="text" name="organisation" id="organisation"
-                                       class="input input-bordered w-full @error('organisation') input-error @enderror"
-                                       value="{{ old('organisation') }}">
-                                <p class="text-xs text-slate-500 mt-1">
-                                    Utiliser de préférence la section "Organisations" ci-dessus.
-                                </p>
-                                @error('organisation')
-                                <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
-                                @enderror
-                            </div>
+
 
                             <!-- Fonction -->
                             <div class="form-control">

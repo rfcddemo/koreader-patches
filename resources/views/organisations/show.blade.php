@@ -233,7 +233,186 @@
                     </div>
                 </div>
             @endif
+
+            <!-- Contacts liés -->
+            @if($organisation->contacts->count() > 0)
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200">
+                    <div class="px-6 py-4 border-b border-slate-200">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-lg font-semibold text-slate-900">
+                                Contacts ({{ $organisation->contacts->count() }})
+                            </h2>
+                            <div class="flex items-center space-x-2 text-sm text-slate-500">
+                    <span class="flex items-center">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                        Actuels: {{ $organisation->contactsActuels->count() }}
+                    </span>
+                                @if($organisation->contacts->count() > $organisation->contactsActuels->count())
+                                    <span class="flex items-center">
+                            <div class="w-2 h-2 bg-slate-400 rounded-full mr-2"></div>
+                            Anciens: {{ $organisation->contacts->count() - $organisation->contactsActuels->count() }}
+                        </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            @foreach($organisation->contacts as $contact)
+                                <div class="flex items-center justify-between p-4 border border-slate-200 rounded-lg transition-all duration-200
+                                {{ $contact->pivot->actuel ? 'bg-white hover:shadow-md' : 'bg-slate-50 border-slate-300 opacity-75' }}">
+                                    <div class="flex items-center space-x-4">
+                                        <!-- Avatar -->
+                                        <div class="relative">
+                                            <img class="h-12 w-12 rounded-full object-cover {{ $contact->pivot->actuel ? '' : 'grayscale' }}"
+                                                 src="https://ui-avatars.com/api/?name={{ urlencode($contact->nom_complet) }}&color={{ $contact->pivot->actuel ? '2563eb' : '64748b' }}&background={{ $contact->pivot->actuel ? 'e0e7ff' : 'e2e8f0' }}"
+                                                 alt="{{ $contact->nom_complet }}">
+                                            @if(!$contact->pivot->actuel)
+                                                <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-slate-400 rounded-full flex items-center justify-center">
+                                                    <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+                                                    </svg>
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        <!-- Informations du contact -->
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2">
+                                                <h3 class="text-sm font-semibold {{ $contact->pivot->actuel ? 'text-slate-900' : 'text-slate-600' }}">
+                                                    {{ $contact->nom_complet }}
+                                                </h3>
+                                                @if(!$contact->pivot->actuel)
+                                                    <span class="text-xs text-slate-500 italic">(Ancien)</span>
+                                                @endif
+                                            </div>
+
+                                            @if($contact->pivot->poste)
+                                                <p class="text-sm {{ $contact->pivot->actuel ? 'text-slate-600' : 'text-slate-500' }} font-medium">
+                                                    {{ $contact->pivot->poste }}
+                                                </p>
+                                            @endif
+
+                                            <!-- Informations de contact -->
+                                            <div class="flex flex-col mt-2 space-y-1">
+                                                @if($contact->email)
+                                                    <div class="flex items-center text-xs {{ $contact->pivot->actuel ? 'text-slate-600' : 'text-slate-500' }}">
+                                                        <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                                        </svg>
+                                                        <a href="mailto:{{ $contact->email }}"
+                                                           class="{{ $contact->pivot->actuel ? 'text-blue-600 hover:text-blue-800' : 'text-slate-500 hover:text-slate-600' }}">
+                                                            {{ $contact->email }}
+                                                        </a>
+                                                    </div>
+                                                @endif
+
+                                                @if($contact->telephone_principal)
+                                                    <div class="flex items-center text-xs {{ $contact->pivot->actuel ? 'text-slate-600' : 'text-slate-500' }}">
+                                                        <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                                        </svg>
+                                                        <a href="tel:{{ $contact->telephone_principal }}"
+                                                           class="{{ $contact->pivot->actuel ? 'text-blue-600 hover:text-blue-800' : 'text-slate-500 hover:text-slate-600' }}">
+                                                            {{ $contact->telephone_principal }}
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                            </div>
+
+                                            <!-- Période -->
+                                            @if($contact->pivot->date_debut || $contact->pivot->date_fin)
+                                                <div class="mt-2 text-xs {{ $contact->pivot->actuel ? 'text-slate-500' : 'text-slate-400' }}">
+                                                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                    </svg>
+                                                    @if($contact->pivot->date_debut && $contact->pivot->date_fin)
+                                                        Du {{ \Carbon\Carbon::parse($contact->pivot->date_debut)->format('m/Y') }}
+                                                        au {{ \Carbon\Carbon::parse($contact->pivot->date_fin)->format('m/Y') }}
+                                                    @elseif($contact->pivot->date_debut)
+                                                        {{ $contact->pivot->actuel ? 'Depuis' : 'À partir de' }} {{ \Carbon\Carbon::parse($contact->pivot->date_debut)->format('m/Y') }}
+                                                    @elseif($contact->pivot->date_fin)
+                                                        Jusqu'à {{ \Carbon\Carbon::parse($contact->pivot->date_fin)->format('m/Y') }}
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <!-- Actions et statut -->
+                                    <div class="flex items-center space-x-3">
+                                        <!-- Badge de statut -->
+                                        @if($contact->pivot->actuel)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                    <div class="w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5"></div>
+                                    Actuel
+                                </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                    <div class="w-1.5 h-1.5 bg-slate-400 rounded-full mr-1.5"></div>
+                                    Ancien
+                                </span>
+                                        @endif
+
+                                        <!-- Actions -->
+                                        <div class="flex space-x-1">
+                                            @if($contact->pivot->actuel)
+                                                <!-- Actions pour contacts actuels -->
+                                                @if($contact->email)
+                                                    <a href="mailto:{{ $contact->email }}"
+                                                       class="btn btn-ghost btn-xs"
+                                                       title="Envoyer un email">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                                        </svg>
+                                                    </a>
+                                                @endif
+
+                                                @if($contact->telephone_principal)
+                                                    <a href="tel:{{ $contact->telephone_principal }}"
+                                                       class="btn btn-ghost btn-xs"
+                                                       title="Appeler">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                                        </svg>
+                                                    </a>
+                                                @endif
+                                            @endif
+
+                                            <!-- Voir le profil du contact (si route existe) -->
+                                            {{-- Décommentez si vous avez une route pour les contacts
+                                            <a href="{{ route('contacts.show', $contact) }}"
+                                               class="btn btn-ghost btn-xs {{ $contact->pivot->actuel ? '' : 'opacity-50' }}"
+                                               title="Voir le profil">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                            </a>
+                                            --}}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Résumé en bas si il y a des contacts non actuels -->
+                        @if($organisation->contacts->count() > $organisation->contactsActuels->count())
+                            <div class="mt-6 pt-4 border-t border-slate-200">
+                                <div class="flex items-center justify-center text-sm text-slate-500">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Les contacts marqués comme "Ancien" ne font plus partie de cette organisation
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
         </div>
+
+
 
         <!-- Sidebar -->
         <div class="space-y-6">
@@ -298,6 +477,7 @@
                 </dl>
             </div>
         </div>
+
     </div>
 
     <!-- Modal de confirmation de suppression -->

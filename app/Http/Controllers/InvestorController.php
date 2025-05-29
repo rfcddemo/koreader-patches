@@ -225,18 +225,7 @@ class InvestorController extends Controller
         }
     }
 
-    /**
-     * Show timeline of interactions for an investor.
-     */
-    public function timeline(Investor $investor)
-    {
-        $interactions = $investor->interactions()
-            ->with(['user'])
-            ->orderBy('date_interaction', 'desc')
-            ->paginate(20);
 
-        return view('investors.timeline', compact('investor', 'interactions'));
-    }
 
     /**
      * Créer une adresse email unique pour l'investisseur.

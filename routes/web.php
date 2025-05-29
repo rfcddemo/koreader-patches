@@ -118,6 +118,50 @@ Route::middleware('auth')->group(function () {
             ->middleware('can:view,investor');
     });
 
+    Route::get('/contacts', [App\Http\Controllers\ContactController::class, 'index'])
+        ->middleware('can:viewAny,App\Models\Contact')
+        ->name('contacts.index');
+
+    Route::get('/contacts/create', [App\Http\Controllers\ContactController::class, 'create'])
+        ->middleware('can:create,App\Models\Contact')
+        ->name('contacts.create');
+
+    Route::post('/contacts', [App\Http\Controllers\ContactController::class, 'store'])
+        ->middleware('can:create,App\Models\Contact')
+        ->name('contacts.store');
+
+    Route::get('/contacts/{contact}', [App\Http\Controllers\ContactController::class, 'show'])
+        ->middleware('can:view,contact')
+        ->name('contacts.show');
+
+    Route::get('/contacts/{contact}/edit', [App\Http\Controllers\ContactController::class, 'edit'])
+        ->middleware('can:update,contact')
+        ->name('contacts.edit');
+
+    Route::put('/contacts/{contact}', [App\Http\Controllers\ContactController::class, 'update'])
+        ->middleware('can:update,contact')
+        ->name('contacts.update');
+
+    Route::delete('/contacts/{contact}', [App\Http\Controllers\ContactController::class, 'destroy'])
+        ->middleware('can:delete,contact')
+        ->name('contacts.destroy');
+
+    //toggle status contact
+    Route::post('/contacts/{contact}/toggle-status', [App\Http\Controllers\ContactController::class, 'toggleStatus'])
+        ->name('contacts.toggle-status')
+        ->middleware('can:update,contact');
+
+    Route::post('/contacts/{contact}/organisations', [App\Http\Controllers\ContactController::class, 'attach'])
+        ->middleware('can:manageRelationships,contact')
+        ->name('contacts.attach-organisation');
+
+    // Détacher une organisation d'un contact
+    Route::delete('/contacts/{contact}/organisations/{organisation}', [App\Http\Controllers\ContactController::class, 'detach'])
+        ->middleware('can:manageRelationships,contact')
+        ->name('contacts.detach-organisation');
+
+
+
 });
 
 Route::get('/investors/interactions/{interaction}/download', [InvestorController::class, 'downloadAttachment'])
