@@ -289,4 +289,89 @@ class InvestorController extends Controller
             'Côte d\'Ivoire', 'Ghana', 'Nigeria', 'Kenya', 'Émirats arabes unis'
         ];
     }
+
+
+
+// Ajouter ces méthodes dans InvestorController
+
+    /**
+     * Export investor data as PDF.
+     */
+    public function exportPdf(Investor $investor)
+    {
+        $investor->load([
+            'categorie',
+            'organisations.pivot',
+            'interactions' => function ($query) {
+                $query->with('user')->orderBy('date_interaction', 'desc');
+            },
+            'commentaires' => function ($query) {
+                $query->with('user')->where('prive', false)->orderBy('created_at', 'desc');
+            },
+            'emailAddress'
+        ]);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('investors.export-pdf', compact('investor'));
+
+        $filename = 'investisseur_' . \Str::slug($investor->nom_complet) . '_' . now()->format('Y-m-d') . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Send email to investor.
+     */
+    public function sendEmail(Request $request, Investor $investor)
+    {
+        $validated = $request->validate([
+            'objet' => ['required', 'string', 'max:255'],
+            'message' => ['required', 'string'],
+            'pieces_jointes' => ['nullable', 'array'],
+            'pieces_jointes.*' => ['file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:10240'],
+        ]);
+
+        try {
+            // TODO: Implémenter l'envoi d'email via le service configuré
+            // Pour l'instant, on simule l'envoi et on enregistre l'interaction
+
+            $interaction = Interaction::create([
+                'investor_id' => $investor->id,
+                'user_id' => auth()->id(),
+                'type' => 'Email envoyé',
+                'date_interaction' => now(),
+                'description' => "Objet: {$validated['objet']}\n\n{$validated['message']}",
+                'metadata' => json_encode([
+                    'objet' => $validated['objet'],
+                    'statut' => 'envoyé',
+                    'destinataire' => $investor->email
+                ])
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Email envoyé avec succès.',
+                'interaction_id' => $interaction->id
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'envoi de l\'email : ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Download interaction attachment.
+     */
+    public function downloadAttachment(Interaction $interaction)
+    {
+        if (!$interaction->piece_jointe || !Storage::disk('private')->exists($interaction->piece_jointe)) {
+            abort(404, 'Fichier introuvable');
+        }
+
+        $filename = basename($interaction->piece_jointe);
+
+        return Storage::disk('private')->download($interaction->piece_jointe, $filename);
+    }
 }

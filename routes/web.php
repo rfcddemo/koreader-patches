@@ -92,6 +92,31 @@ Route::middleware('auth')->group(function () {
 
 
 
+    // Routes AJAX pour les commentaires d'investisseurs
+    Route::prefix('ajax')->name('ajax.')->group(function () {
+        Route::post('/investors/{investor}/comments', [App\Http\Controllers\Ajax\InvestorCommentController::class, 'store'])
+            ->name('investor.comments.store')
+            ->middleware('can:view,investor');
+
+        Route::get('/investors/{investor}/comments', [App\Http\Controllers\Ajax\InvestorCommentController::class, 'index'])
+            ->name('investor.comments.index')
+            ->middleware('can:view,investor');
+
+        Route::patch('/comments/{comment}', [App\Http\Controllers\Ajax\InvestorCommentController::class, 'update'])
+            ->name('comments.update');
+
+        Route::delete('/comments/{comment}', [App\Http\Controllers\Ajax\InvestorCommentController::class, 'destroy'])
+            ->name('comments.destroy');
+
+        // Routes pour les interactions
+        Route::post('/investors/{investor}/interactions', [App\Http\Controllers\Ajax\InteractionController::class, 'store'])
+            ->name('investor.interactions.store')
+            ->middleware('can:view,investor');
+
+        Route::get('/investors/{investor}/interactions', [App\Http\Controllers\Ajax\InteractionController::class, 'index'])
+            ->name('investor.interactions.index')
+            ->middleware('can:view,investor');
+    });
 
 });
 
