@@ -1,15 +1,13 @@
-/* Fonts personnalisés pour un look plus professionnel */
+/* IMPORTANT: All @import statements MUST be at the very top */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
 /* Styles personnalisés pour le CRM BOA */
 @layer base {
     body {
+        font-family: 'Inter', sans-serif;
         font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
 
