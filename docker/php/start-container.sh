@@ -17,6 +17,15 @@ if [ "$role" = "app" ]; then
         sleep 2
     done
 
+    echo "Installing PHP dependencies..."
+    composer install --no-interaction --prefer-dist
+
+    echo "Installing Node dependencies..."
+    npm install --no-progress
+
+    echo "Building assets..."
+    npm run build
+
     # Run migrations if in production and not already run
     if [ "$env" = "production" ]; then
         echo "Checking for pending migrations..."

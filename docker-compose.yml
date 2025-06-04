@@ -63,7 +63,7 @@ services:
         volumes:
             - .:/var/www/html
             - /var/www/html/node_modules
-        command: sh -c "npm install && npm run dev"
+        command: npm run dev
         ports:
             - "${VITE_PORT:-5173}:5173"
         environment:

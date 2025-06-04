@@ -18,12 +18,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Routes pour les organisations - sans middleware global can:view
     Route::resource('organisations', OrganisationController::class);
@@ -54,7 +48,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/investisseurs', [InvestorController::class, 'index'])
         ->name('investors.index')
         ->middleware('can:viewAny,App\Models\Investor');
-        ;
 
     Route::get('/investisseurs/create', [InvestorController::class, 'create'])
         ->name('investors.create')

@@ -1,3 +1,6 @@
+# Stage Node to provide Node 20
+FROM node:20-alpine AS node
+
 # Stage de base
 FROM php:8.4-fpm-alpine AS base
 
@@ -55,6 +58,10 @@ RUN apk add --no-cache --virtual .build-deps autoconf g++ make \
 
 # Installation de Redis extension
 RUN (php -m | grep -q redis) || (pecl install redis && docker-php-ext-enable redis)
+# Copie de Node.js 20 depuis l'image officielle
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/bin/npm /usr/local/bin/npm
+COPY --from=node /usr/local/bin/npx /usr/local/bin/npx
 
 
 # Installation de Composer

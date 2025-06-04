@@ -144,6 +144,8 @@ install_dependencies() {
     # Installation des dépendances Node.js
     log_info "Installation des dépendances Node.js..."
     $compose_cmd exec node npm install
+    log_info "Compilation des assets..."
+    $compose_cmd exec node npm run build
 
     log_success "Dépendances installées"
 }
