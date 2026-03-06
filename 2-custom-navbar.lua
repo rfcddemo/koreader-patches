@@ -46,6 +46,7 @@ local config_default = {
     tab_order = { "books", "manga", "news", "continue", "history", "favorites", "collections" },
     show_labels = true,
     show_top_border = true,
+    books_label = "Books",
     colored = false,
     active_tab_color = {0x33, 0x99, 0xFF}, -- blue
 }
@@ -85,10 +86,14 @@ local config = loadConfig()
 
 -- === Tab definitions ===
 
+local function getBooksLabel()
+    return config.books_label ~= "" and config.books_label or "Books"
+end
+
 local tabs = {
     {
         id = "books",
-        label = _("Books"),
+        label = getBooksLabel(),
         icon = "book.opened",
     },
     {
@@ -407,6 +412,9 @@ local function getVisibleTabs()
 end
 
 local function createNavBar()
+    -- Update books tab label from config
+    tabs_by_id["books"].label = getBooksLabel()
+
     local visible_tabs = getVisibleTabs()
     if #visible_tabs == 0 then return nil end
 
@@ -574,6 +582,81 @@ function FileManagerMenu:setUpdateItemTable()
     self.menu_items.navbar_settings = {
         text = _("Navbar settings"),
         sub_item_table = {
+            {
+                text_func = function()
+                    return _("Books tab label: ") .. getBooksLabel()
+                end,
+                sub_item_table = {
+                    {
+                        text = _("Books"),
+                        checked_func = function() return config.books_label == "Books" or config.books_label == "" end,
+                        callback = function()
+                            config.books_label = "Books"
+                            G_reader_settings:saveSetting("bottom_navbar", config)
+                        end,
+                    },
+                    {
+                        text = _("Home"),
+                        checked_func = function() return config.books_label == "Home" end,
+                        callback = function()
+                            config.books_label = "Home"
+                            G_reader_settings:saveSetting("bottom_navbar", config)
+                        end,
+                    },
+                    {
+                        text = _("Library"),
+                        checked_func = function() return config.books_label == "Library" end,
+                        callback = function()
+                            config.books_label = "Library"
+                            G_reader_settings:saveSetting("bottom_navbar", config)
+                        end,
+                    },
+                    {
+                        text_func = function()
+                            local presets = {[""] = true, Books = true, Home = true, Library = true}
+                            if presets[config.books_label] then
+                                return _("Custom")
+                            end
+                            return _("Custom: ") .. config.books_label
+                        end,
+                        checked_func = function()
+                            local presets = {[""] = true, Books = true, Home = true, Library = true}
+                            return not presets[config.books_label]
+                        end,
+                        keep_menu_open = true,
+                        callback = function(touchmenu_instance)
+                            local InputDialog = require("ui/widget/inputdialog")
+                            local dlg
+                            dlg = InputDialog:new{
+                                title = _("Books tab label"),
+                                input = config.books_label,
+                                buttons = {{
+                                    {
+                                        text = _("Cancel"),
+                                        id = "close",
+                                        callback = function() UIManager:close(dlg) end,
+                                    },
+                                    {
+                                        text = _("Set"),
+                                        is_enter_default = true,
+                                        callback = function()
+                                            local text = dlg:getInputText()
+                                            config.books_label = text ~= "" and text or "Books"
+                                            G_reader_settings:saveSetting("bottom_navbar", config)
+                                            UIManager:close(dlg)
+                                            if touchmenu_instance then
+                                                touchmenu_instance:updateItems()
+                                            end
+                                        end,
+                                    },
+                                }},
+                            }
+                            UIManager:show(dlg)
+                            dlg:onShowKeyboard()
+                        end,
+                    },
+                },
+            },
             {
                 text = _("Show labels"),
                 checked_func = function() return config.show_labels end,
