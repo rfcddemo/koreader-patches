@@ -44,6 +44,7 @@ local config_default = {
         collections = false,
     },
     tab_order = { "books", "manga", "news", "continue", "history", "favorites", "collections" },
+    show_labels = true,
     show_top_border = true,
     colored = false,
     active_tab_color = {0x33, 0x99, 0xFF}, -- blue
@@ -331,11 +332,19 @@ local function createTabWidget(tab, tab_w, is_active)
         }
     end
 
-    local icon_label_group = VerticalGroup:new{
-        align = "center",
-        icon,
-        label,
-    }
+    local icon_label_group
+    if config.show_labels then
+        icon_label_group = VerticalGroup:new{
+            align = "center",
+            icon,
+            label,
+        }
+    else
+        icon_label_group = VerticalGroup:new{
+            align = "center",
+            icon,
+        }
+    end
 
     local underline
     if is_active then
@@ -367,14 +376,16 @@ local function createTabWidget(tab, tab_w, is_active)
         underline = VerticalSpan:new{ width = underline_thickness }
     end
 
+    local v_pad = config.show_labels and navbar_v_padding or navbar_v_padding * 2
+
     return CenterContainer:new{
-        dimen = Geom:new{ w = tab_w, h = icon_label_group:getSize().h + navbar_v_padding * 2 + underline_thickness },
+        dimen = Geom:new{ w = tab_w, h = icon_label_group:getSize().h + v_pad * 2 + underline_thickness },
         VerticalGroup:new{
             align = "center",
             underline,
-            VerticalSpan:new{ width = navbar_v_padding },
+            VerticalSpan:new{ width = v_pad },
             icon_label_group,
-            VerticalSpan:new{ width = navbar_v_padding },
+            VerticalSpan:new{ width = v_pad },
         },
     }
 end
@@ -477,13 +488,16 @@ end
 
 local Menu = require("ui/widget/menu")
 
-local _navbar_height = createNavBar():getSize().h
+local function getNavbarHeight()
+    local nb = createNavBar()
+    return nb and nb:getSize().h or 0
+end
 
 local orig_menu_init = Menu.init
 
 function Menu:init()
     if self.name == "filemanager" and not self.height then
-        self.height = Screen:getHeight() - _navbar_height
+        self.height = Screen:getHeight() - getNavbarHeight()
     end
     orig_menu_init(self)
 end
@@ -510,6 +524,17 @@ local function injectNavbar(fm)
     if not navbar then
         fm_ui[1] = file_chooser
         return
+    end
+
+    -- Update FileChooser height to account for (potentially changed) navbar height
+    local navbar_h = navbar:getSize().h
+    local new_height = Screen:getHeight() - navbar_h
+    if file_chooser.height ~= new_height then
+        local chrome = file_chooser.dimen.h - file_chooser.inner_dimen.h
+        file_chooser.height = new_height
+        file_chooser.dimen.h = new_height
+        file_chooser.inner_dimen.h = new_height - chrome
+        file_chooser:updateItems()
     end
 
     fm_ui[1] = VerticalGroup:new{
@@ -548,6 +573,14 @@ function FileManagerMenu:setUpdateItemTable()
     self.menu_items.navbar_settings = {
         text = _("Navbar settings"),
         sub_item_table = {
+            {
+                text = _("Show labels"),
+                checked_func = function() return config.show_labels end,
+                callback = function()
+                    config.show_labels = not config.show_labels
+                    G_reader_settings:saveSetting("bottom_navbar", config)
+                end,
+            },
             {
                 text = _("Show top border"),
                 checked_func = function() return config.show_top_border end,

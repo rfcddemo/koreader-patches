@@ -59,6 +59,7 @@ The active tab is highlighted with a bold label and underline (technically only 
 **Features:**
 - Settings menu under **File Browser > Navbar settings**
 - **Tabs** submenu: toggle individual tabs, drag to reorder
+- Option to disable labels (icons only)
 - Optional top border line
 - Optional colored active tab (icon, label, and underline in configurable color, blue by default)
 - Refresh navbar button to apply changes without restarting
