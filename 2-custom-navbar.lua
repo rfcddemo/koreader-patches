@@ -53,6 +53,12 @@ local config_default = {
     news_folder = "",
     colored = false,
     active_tab_color = {0x33, 0x99, 0xFF}, -- blue
+    show_in_standalone = true,
+    show_top_gap = false,
+    active_tab_styling = true,
+    active_tab_bold = true,
+    active_tab_underline = true,
+    underline_above = true,
 }
 
 local function loadConfig()
@@ -350,7 +356,8 @@ end
 -- === Build a single tab (visual only) ===
 
 local function createTabWidget(tab, tab_w, is_active)
-    local use_color = config.colored and is_active and Screen:isColorScreen()
+    local styled = is_active and config.active_tab_styling
+    local use_color = styled and config.colored and Screen:isColorScreen()
     local active_color
     if use_color then
         local c = config.active_tab_color
@@ -358,6 +365,8 @@ local function createTabWidget(tab, tab_w, is_active)
             active_color = Blitbuffer.ColorRGB32(c[1], c[2], c[3], 0xFF)
         end
     end
+
+    local use_bold = styled and config.active_tab_bold
 
     local icon
     if active_color then
@@ -379,13 +388,13 @@ local function createTabWidget(tab, tab_w, is_active)
     if active_color then
         label = ColorTextWidget:new{
             text = tab.label,
-            face = navbar_font_bold,
+            face = use_bold and navbar_font_bold or navbar_font,
             fgcolor = active_color,
         }
     else
         label = TextWidget:new{
             text = tab.label,
-            face = is_active and navbar_font_bold or navbar_font,
+            face = use_bold and navbar_font_bold or navbar_font,
         }
     end
 
@@ -403,8 +412,9 @@ local function createTabWidget(tab, tab_w, is_active)
         }
     end
 
+    local show_underline = styled and config.active_tab_underline
     local underline
-    if is_active then
+    if show_underline then
         local underline_color = Blitbuffer.COLOR_BLACK
         if config.colored then
             local c = config.active_tab_color
@@ -413,8 +423,6 @@ local function createTabWidget(tab, tab_w, is_active)
             end
         end
         if config.colored and Screen:isColorScreen() then
-            -- LineWidget uses paintRect which converts to grayscale.
-            -- Use a custom widget with paintRectRGB32 for color.
             local Widget = require("ui/widget/widget")
             local color_line = Widget:new{
                 dimen = Geom:new{ w = tab_w, h = underline_thickness },
@@ -435,15 +443,28 @@ local function createTabWidget(tab, tab_w, is_active)
 
     local v_pad = config.show_labels and navbar_v_padding or navbar_v_padding * 2
 
-    return CenterContainer:new{
-        dimen = Geom:new{ w = tab_w, h = icon_label_group:getSize().h + v_pad * 2 + underline_thickness },
-        VerticalGroup:new{
+    local children
+    if config.underline_above then
+        children = {
             align = "center",
             underline,
             VerticalSpan:new{ width = v_pad },
             icon_label_group,
             VerticalSpan:new{ width = v_pad },
-        },
+        }
+    else
+        children = {
+            align = "center",
+            VerticalSpan:new{ width = v_pad },
+            icon_label_group,
+            VerticalSpan:new{ width = v_pad },
+            underline,
+        }
+    end
+
+    return CenterContainer:new{
+        dimen = Geom:new{ w = tab_w, h = icon_label_group:getSize().h + v_pad * 2 + underline_thickness },
+        VerticalGroup:new(children),
     }
 end
 
@@ -462,7 +483,7 @@ local function getVisibleTabs()
     return visible
 end
 
-local function createNavBar(no_top_gap)
+local function createNavBar()
     -- Update books tab label from config
     tabs_by_id["books"].label = getBooksLabel()
 
@@ -503,12 +524,12 @@ local function createNavBar(no_top_gap)
             },
             row_with_padding,
         }
-        if not no_top_gap then
+        if config.show_top_gap then
             table.insert(visual_children, VerticalSpan:new{ width = navbar_top_gap })
         end
         table.insert(visual_children, separator_and_row)
     else
-        if not no_top_gap then
+        if config.show_top_gap then
             table.insert(visual_children, VerticalSpan:new{ width = navbar_top_gap })
         end
         table.insert(visual_children, row_with_padding)
@@ -559,8 +580,8 @@ end
 
 local Menu = require("ui/widget/menu")
 
-local function getNavbarHeight(no_top_gap)
-    local nb = createNavBar(no_top_gap)
+local function getNavbarHeight()
+    local nb = createNavBar()
     return nb and nb:getSize().h or 0
 end
 
@@ -595,10 +616,9 @@ local orig_menu_init = Menu.init
 function Menu:init()
     if self.name == "filemanager" and not self.height then
         self.height = Screen:getHeight() - getNavbarHeight()
-    elseif not _skip_standalone_navbar and isStandaloneNavbarView(self) then
+    elseif config.show_in_standalone and not _skip_standalone_navbar and isStandaloneNavbarView(self) then
         -- Override height even if already set (e.g. Rakuyomi sets height = screen_h)
-        -- Use no_top_gap=true since standalone navbars skip the top gap
-        self.height = Screen:getHeight() - getNavbarHeight(true)
+        self.height = Screen:getHeight() - getNavbarHeight()
         -- Force borderless for plugin views that forgot to set it (e.g. Rakuyomi)
         if not self.is_borderless then
             self.is_borderless = true
@@ -609,7 +629,7 @@ function Menu:init()
     -- so inject navbar via nextTick from here. Hide-pagination doesn't
     -- apply to these views so there's no ordering conflict.
     local nexttick_tab_id = standalone_nexttick_tab_ids[self.name]
-    if nexttick_tab_id then
+    if nexttick_tab_id and config.show_in_standalone then
         local menu = self
         UIManager:nextTick(function()
             injectStandaloneNavbar(menu, nexttick_tab_id)
@@ -709,7 +729,7 @@ injectStandaloneNavbar = function(menu, view_tab_id)
     -- Temporarily highlight the view's tab
     local saved_active = active_tab
     active_tab = view_tab_id
-    local navbar = createNavBar(true)
+    local navbar = createNavBar()
     active_tab = saved_active
 
     if not navbar then return end
@@ -756,9 +776,7 @@ injectStandaloneNavbar = function(menu, view_tab_id)
     -- Expand dimen to full screen so gestures and repaints cover the navbar area
     menu.dimen.h = Screen:getHeight()
 
-    -- Wrap FrameContainer with navbar below, using a FrameContainer with white
-    -- background so the FM's navbar (painted underneath) doesn't bleed through
-    -- the transparent navbar_top_gap spacer.
+    -- Wrap with navbar below, opaque background to prevent FM navbar bleed-through
     local FrameContainer = require("ui/widget/container/framecontainer")
     menu[1] = FrameContainer:new{
         background = Blitbuffer.COLOR_WHITE,
@@ -798,7 +816,7 @@ local orig_onShowHist = FileManagerHistory.onShowHist
 
 function FileManagerHistory:onShowHist(search_info)
     local result = orig_onShowHist(self, search_info)
-    if self.booklist_menu then
+    if config.show_in_standalone and self.booklist_menu then
         injectStandaloneNavbar(self.booklist_menu, "history")
     end
     return result
@@ -808,15 +826,10 @@ local FileManagerCollection = require("apps/filemanager/filemanagercollection")
 local orig_onShowColl = FileManagerCollection.onShowColl
 
 function FileManagerCollection:onShowColl(collection_name)
-    -- If coll_list exists, this is a nested view (collection opened from collections list)
-    local is_nested = self.coll_list ~= nil
-    if is_nested then
-        _skip_standalone_navbar = true
-    end
+    local from_coll_list = self.coll_list ~= nil
     local result = orig_onShowColl(self, collection_name)
-    _skip_standalone_navbar = false
-    if self.booklist_menu and not is_nested then
-        injectStandaloneNavbar(self.booklist_menu, "favorites")
+    if config.show_in_standalone and self.booklist_menu then
+        injectStandaloneNavbar(self.booklist_menu, from_coll_list and "collections" or "favorites")
     end
     return result
 end
@@ -831,7 +844,7 @@ function FileManagerCollection:onShowCollList(file_or_selected_collections, call
     local result = orig_onShowCollList(self, file_or_selected_collections, caller_callback, no_dialog)
     _skip_standalone_navbar = false
     -- Only inject navbar in browse mode, not selection mode
-    if self.coll_list and file_or_selected_collections == nil then
+    if config.show_in_standalone and self.coll_list and file_or_selected_collections == nil then
         injectStandaloneNavbar(self.coll_list, "collections")
     end
     return result
@@ -856,7 +869,9 @@ hookQuickRSSInit = function()
     function QuickRSSUI_class:init()
         orig_qrss_init(self)
 
-        local navbar_h = getNavbarHeight(true)
+        if not config.show_in_standalone then return end
+
+        local navbar_h = getNavbarHeight()
         if navbar_h <= 0 then return end
 
         -- Reduce the outer FrameContainer height
@@ -871,7 +886,7 @@ hookQuickRSSInit = function()
         -- Inject navbar below the QuickRSS view
         local saved_active = active_tab
         active_tab = "news"
-        local navbar = createNavBar(true)
+        local navbar = createNavBar()
         active_tab = saved_active
         if not navbar then return end
 
@@ -958,12 +973,54 @@ function FileManagerMenu:setUpdateItemTable()
                 end,
             },
             {
-                text = _("Colored active tab"),
-                checked_func = function() return config.colored end,
-                callback = function()
-                    config.colored = not config.colored
-                    G_reader_settings:saveSetting("bottom_navbar", config)
-                end,
+                text = _("Active tab"),
+                sub_item_table = {
+                    {
+                        text = _("Enable active tab styling"),
+                        checked_func = function() return config.active_tab_styling end,
+                        callback = function()
+                            config.active_tab_styling = not config.active_tab_styling
+                            G_reader_settings:saveSetting("bottom_navbar", config)
+                        end,
+                    },
+                    {
+                        text = _("Bold active tab"),
+                        enabled_func = function() return config.active_tab_styling end,
+                        checked_func = function() return config.active_tab_bold end,
+                        callback = function()
+                            config.active_tab_bold = not config.active_tab_bold
+                            G_reader_settings:saveSetting("bottom_navbar", config)
+                        end,
+                    },
+                    {
+                        text = _("Active tab underline"),
+                        enabled_func = function() return config.active_tab_styling end,
+                        checked_func = function() return config.active_tab_underline end,
+                        callback = function()
+                            config.active_tab_underline = not config.active_tab_underline
+                            G_reader_settings:saveSetting("bottom_navbar", config)
+                        end,
+                    },
+                    {
+                        text_func = function()
+                            return _("Underline location: ") .. (config.underline_above and _("above") or _("below"))
+                        end,
+                        enabled_func = function() return config.active_tab_styling and config.active_tab_underline end,
+                        callback = function()
+                            config.underline_above = not config.underline_above
+                            G_reader_settings:saveSetting("bottom_navbar", config)
+                        end,
+                    },
+                    {
+                        text = _("Colored active tab"),
+                        enabled_func = function() return config.active_tab_styling end,
+                        checked_func = function() return config.colored end,
+                        callback = function()
+                            config.colored = not config.colored
+                            G_reader_settings:saveSetting("bottom_navbar", config)
+                        end,
+                    },
+                },
             },
             {
                 text = _("Tabs"),
@@ -1217,6 +1274,29 @@ function FileManagerMenu:setUpdateItemTable()
                         checked_func = function() return config.show_tabs.collections end,
                         callback = function()
                             config.show_tabs.collections = not config.show_tabs.collections
+                            G_reader_settings:saveSetting("bottom_navbar", config)
+                        end,
+                    },
+                },
+            },
+            {
+                text = _("Advanced"),
+                sub_item_table = {
+                    {
+                        text = _("Show navbar in standalone views"),
+                        help_text = _("Show the navbar in History, Favorites, Collections, Rakuyomi, and QuickRSS views."),
+                        checked_func = function() return config.show_in_standalone end,
+                        callback = function()
+                            config.show_in_standalone = not config.show_in_standalone
+                            G_reader_settings:saveSetting("bottom_navbar", config)
+                        end,
+                    },
+                    {
+                        text = _("Show top gap"),
+                        help_text = _("Add spacing above the navbar to separate it from the content above."),
+                        checked_func = function() return config.show_top_gap end,
+                        callback = function()
+                            config.show_top_gap = not config.show_top_gap
                             G_reader_settings:saveSetting("bottom_navbar", config)
                         end,
                     },
