@@ -28,6 +28,8 @@ local navbar_icon_size = Screen:scaleBySize(34)
 local navbar_font = Font:getFace("smallinfofont")
 local navbar_font_bold = Font:getFace("smallinfofontbold")
 local navbar_v_padding = Screen:scaleBySize(4)
+-- Dead zone at left/right edges to avoid stealing corner gesture taps
+local corner_dead_zone = math.floor(Screen:getWidth() / 12)
 local navbar_top_gap = Screen:scaleBySize(10)
 local underline_thickness = Screen:scaleBySize(2)
 
@@ -569,6 +571,10 @@ local function createNavBar()
         if not self.dimen or not self.dimen:contains(ges.pos) then
             return false
         end
+        -- Let corner gesture zones pass through
+        if ges.pos.x < corner_dead_zone or ges.pos.x > screen_w - corner_dead_zone then
+            return false
+        end
         -- Determine which tab was tapped based on x position
         local tap_x = ges.pos.x - navbar_h_padding
         local idx = math.floor(tap_x / tab_w) + 1
@@ -753,9 +759,12 @@ injectStandaloneNavbar = function(menu, view_tab_id)
         if not self_nb.dimen or not self_nb.dimen:contains(ges.pos) then
             return false
         end
+        local screen_w = Screen:getWidth()
+        if ges.pos.x < corner_dead_zone or ges.pos.x > screen_w - corner_dead_zone then
+            return false
+        end
         local vis_tabs = getVisibleTabs()
         if #vis_tabs == 0 then return false end
-        local screen_w = Screen:getWidth()
         local inner_w = screen_w - navbar_h_padding * 2
         local tab_w_local = math.floor(inner_w / #vis_tabs)
         local tap_x = ges.pos.x - navbar_h_padding
@@ -909,9 +918,12 @@ hookQuickRSSInit = function()
             if not self_nb.dimen or not self_nb.dimen:contains(ges.pos) then
                 return false
             end
+            local screen_w = Screen:getWidth()
+            if ges.pos.x < corner_dead_zone or ges.pos.x > screen_w - corner_dead_zone then
+                return false
+            end
             local vis_tabs = getVisibleTabs()
             if #vis_tabs == 0 then return false end
-            local screen_w = Screen:getWidth()
             local inner_w = screen_w - navbar_h_padding * 2
             local tab_w_local = math.floor(inner_w / #vis_tabs)
             local tap_x = ges.pos.x - navbar_h_padding
